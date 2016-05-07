@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -273,7 +274,8 @@ public class Context {
 		
 		while (it.hasNext() && kit == null){
 			Kit tmpKit = it.next();
-			if (tmpKit.getName().equals(kitName)){
+			
+			if (tmpKit.getName().equalsIgnoreCase(ChatColor.stripColor(kitName))){
 				kit = tmpKit;
 			}
 		}

@@ -140,27 +140,29 @@ public class Global implements Listener{
 					
 					Kit kit = plugin.getContext().getKit(ev.getCurrentItem().getItemMeta().getDisplayName());
 					
-					Inventory iv = plugin.getServer().createInventory(null, InventoryType.HOPPER, ChatColor.GOLD + kit.getName() + ChatColor.GRAY + " Option");
-					
-					ItemStack cc = new ItemStack(Material.CHEST);
-					ItemMeta ccm = cc.getItemMeta();
-					ccm.setDisplayName(ChatColor.AQUA + "Set Kit");
-					cc.setItemMeta(ccm);
-					iv.setItem(0, cc);
-					
-					ItemStack re = new ItemStack(Material.ANVIL);
-					ItemMeta are = re.getItemMeta();
-					are.setDisplayName(ChatColor.AQUA + "Rename kit");
-					re.setItemMeta(are);
-					iv.setItem(2, re);
-					
-					ItemStack de = new ItemStack(Material.TNT);
-					ItemMeta ade = de.getItemMeta();
-					ade.setDisplayName(ChatColor.AQUA + "Remove kit");
-					de.setItemMeta(ade);
-					iv.setItem(4, de);
-					
-					player.openInventory(iv);
+					if (kit != null){
+						Inventory iv = plugin.getServer().createInventory(null, InventoryType.HOPPER, ChatColor.GOLD + kit.getName() + ChatColor.GRAY + " Option");
+						
+						ItemStack cc = new ItemStack(Material.CHEST);
+						ItemMeta ccm = cc.getItemMeta();
+						ccm.setDisplayName(ChatColor.AQUA + "Set Kit");
+						cc.setItemMeta(ccm);
+						iv.setItem(0, cc);
+						
+						ItemStack re = new ItemStack(Material.ANVIL);
+						ItemMeta are = re.getItemMeta();
+						are.setDisplayName(ChatColor.AQUA + "Rename kit");
+						re.setItemMeta(are);
+						iv.setItem(2, re);
+						
+						ItemStack de = new ItemStack(Material.TNT);
+						ItemMeta ade = de.getItemMeta();
+						ade.setDisplayName(ChatColor.AQUA + "Remove kit");
+						de.setItemMeta(ade);
+						iv.setItem(4, de);
+						
+						player.openInventory(iv);
+					}
 					
 					return;
 				}

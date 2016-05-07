@@ -92,6 +92,14 @@ public class TaupeGunPlugin extends JavaPlugin{
 			e1.printStackTrace();
 		}
 		
+		try{
+			if (scoreboard != null && scoreboard.getObjective("PlayerHealth") != null){
+				scoreboard.getObjective("PlayerHealth").unregister();
+			}
+		}catch(IllegalStateException e){
+			e.printStackTrace();
+		}
+		
 		// Initialize score board
 		try{
 			// Change the score board to show players life
@@ -215,7 +223,6 @@ public class TaupeGunPlugin extends JavaPlugin{
 	
 	/**
 	 * Called when a command is detected
-	 * (non-Javadoc)
 	 * @see org.bukkit.plugin.java.JavaPlugin#onCommand(org.bukkit.command.CommandSender, org.bukkit.command.Command, java.lang.String, java.lang.String[])
 	 */
 	public boolean onCommand(CommandSender s, Command c, String l, String[] a)
