@@ -95,7 +95,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 		// Initialize score board
 		try{
 			// Change the score board to show players life
-			scoreboard.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+			scoreboard.registerNewObjective("PlayerHealth", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		}catch (IllegalArgumentException e){
 			e.printStackTrace();
 		}
@@ -499,14 +499,18 @@ public class TaupeGunPlugin extends JavaPlugin{
 	{
 		Scoreboard scoreboard = this.getServer().getScoreboardManager().getMainScoreboard();
 		
+		
 		try{
-			scoreboard.getObjective(scoreboardTitle).unregister();
+			if (scoreboard != null && scoreboard.getObjective(scoreboardTitle) != null){
+				scoreboard.getObjective(scoreboardTitle).unregister();
+			}
 		}catch(IllegalStateException e){
 			e.printStackTrace();
 		}
+		
 
 		// ?
-		Objective ob = scoreboard.registerNewObjective(scoreboardTitle, "title");
+		Objective ob = scoreboard.registerNewObjective(scoreboardTitle, "TaupeGunObjective");
 		ob.setDisplaySlot(DisplaySlot.SIDEBAR);
 		String ml = displayTime(context.getMinutesLeft());
 		String sl = displayTime(context.getSecondsLeft());

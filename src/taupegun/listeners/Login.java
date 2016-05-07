@@ -32,6 +32,7 @@ public class Login implements Listener{
 			ItemMeta ccm = is.getItemMeta();
 			ccm.setDisplayName(ChatColor.AQUA + "Choose a team");
 			is.setItemMeta(ccm);
+			ev.getPlayer().getInventory().clear();
 			ev.getPlayer().getInventory().addItem(is);
 			
 			ev.getPlayer().setGameMode(ev.getPlayer().isOp() ? GameMode.CREATIVE : GameMode.SURVIVAL );

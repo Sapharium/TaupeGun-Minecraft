@@ -104,6 +104,8 @@ public class Context {
 		this.molesTeams = new ArrayList<Team>();
 		this.players = new ArrayList<Player>();
 		this.playersTeams = new HashMap<Player,Team>();
+		this.kits = new ArrayList<Kit>();
+		this.molesWaitingKit = new ArrayList<Player>();
 		
 		// Initialize available colors
 		availableColors = new ArrayList<ChatColor>();
@@ -378,7 +380,7 @@ public class Context {
 	 */
 	private Location randomLocation()
 	{
-		int size = plugin.getConfig().getInt("map.size");
+		int size = plugin.getConfig().getInt("map.startSize");
 		
 		double rx = new Random().nextInt(size*2);
 		double rz = new Random().nextInt(size*2);
