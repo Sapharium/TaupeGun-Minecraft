@@ -3,6 +3,7 @@ package taupegun.structures;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -89,6 +90,7 @@ public class Team {
 	 * @param player	Player object to add
 	 */
 	public void addPlayer(Player player){
+		this.scoreboardTeam.addEntry(player.getName());
 		player.setPlayerListName(this.color+"["+this.name+"] "+player.getDisplayName());
 		players.add(player);
 	}
@@ -98,6 +100,7 @@ public class Team {
 	 * @param player	Player object to remove
 	 */
 	public void removePlayer(Player player){
+		this.scoreboardTeam.removeEntry(player.getName());
 		player.setPlayerListName(player.getDisplayName());
 		players.remove(player);
 	}
@@ -148,6 +151,14 @@ public class Team {
 	 */
 	public org.bukkit.scoreboard.Team getScoreboardTeam() {
 		return scoreboardTeam;
+	}
+	
+	/**
+	 * Set a scoreboard team object for this team
+	 * @param scoreboardTeam	the scoreboard team object
+	 */
+	public void setScoreboardTeam(org.bukkit.scoreboard.Team scoreboardTeam){
+		this.scoreboardTeam = scoreboardTeam;
 	}
 
 

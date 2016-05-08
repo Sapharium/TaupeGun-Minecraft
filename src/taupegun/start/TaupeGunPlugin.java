@@ -100,6 +100,13 @@ public class TaupeGunPlugin extends JavaPlugin{
 			e.printStackTrace();
 		}
 		
+		// Clean teams
+		Iterator<org.bukkit.scoreboard.Team> it = scoreboard.getTeams().iterator();
+		
+		while (it.hasNext()){
+			it.next().unregister();
+		}
+		
 		// Initialize score board
 		try{
 			// Change the score board to show players life
@@ -378,6 +385,11 @@ public class TaupeGunPlugin extends JavaPlugin{
 					context.setMinutesMolesLeft(config.getInt("moles.timer"));
 					
 					getServer().broadcastMessage(ChatColor.GREEN + "Game is starting...");
+					
+					// Disable some previous events
+					/* TODO */
+					
+					
 					//GO GO GO
 					notifyPlayersOnBroadcast("3",ChatColor.GREEN,true);
 					

@@ -1,12 +1,16 @@
 package taupegun.listeners;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import taupegun.start.TaupeGunPlugin;
+import taupegun.structures.Team;
 
 public class Preparation implements Listener{
 
@@ -43,4 +47,31 @@ public class Preparation implements Listener{
 		}
 	}
 	
+	@EventHandler
+	public void onMoveItemInventory(InventoryMoveItemEvent ev){
+		
+		if(!plugin.getContext().hasStarted())
+		{
+			ev.setCancelled(true);
+		}
+		
+	}
+	
+	@EventHandler
+	public void OnPlayerMove(PlayerMoveEvent ev){
+		
+		if(!plugin.getContext().hasStarted())
+		{
+			Player player = ev.getPlayer();
+			
+			if(plugin.getContext().isAlreadyInATeam(player)){
+				
+				Team team = plugin.getContext().getTeamOfPlayer(player);
+				
+				
+				
+			}
+		}
+		
+	}
 }

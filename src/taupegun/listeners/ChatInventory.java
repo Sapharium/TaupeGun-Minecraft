@@ -31,7 +31,7 @@ public class ChatInventory implements Listener
 	/**
 	 * Reference about commands that a op player ask
 	 */
-	private static final Map<Player, StateChat> dernier_etat = new HashMap<Player, StateChat>();
+	private static final Map<Player, StateChat> last_state = new HashMap<Player, StateChat>();
 	
 	/**
 	 * Reference to the plugin Object
@@ -54,11 +54,11 @@ public class ChatInventory implements Listener
 		String message = ev.getMessage();
 		Player player = ev.getPlayer();
 		
-		if (dernier_etat.containsKey(player))
+		if (last_state.containsKey(player))
 		{
 			ev.setCancelled(true);
 			
-			StateChat etat = (StateChat) dernier_etat.get(player);
+			StateChat etat = (StateChat) last_state.get(player);
 			
 			if (message.equalsIgnoreCase("cancel"))
 			{
@@ -75,7 +75,11 @@ public class ChatInventory implements Listener
 					removePlayerStates(player);
 					return;
 				}
-				
+				if (message.length() > 16){
+					ev.getPlayer().sendMessage(ChatColor.DARK_RED + "Team name can't be longer than 16 characters");
+					return;
+				}
+
 				Team team = plugin.getContext().addTeam(message);
 				player.sendMessage(ChatColor.GRAY + "Team " + team.getColor() + team.getName() + ChatColor.GRAY + " has been created");
 				removePlayerStates(player);
@@ -93,48 +97,31 @@ public class ChatInventory implements Listener
 					return;
 				}
 				
-				player.sendMessage(ChatColor.GRAY + "Team " + team.getColor() + team.getName() + ChatColor.GRAY + " is now called " + team.getColor() + message + ChatColor.GRAY + ".");
-				
-				team.setName(message);
-				
-				for(Player play : team.getPlayers())
-				{
-					play.setPlayerListName(team.getColor()+"["+team.getName()+"] "+player.getDisplayName());
-				}
-				
-				removePlayerStates(player);
-				return;
-			}
-			
-			if (etat.equals(StateChat.CHANGE_COLOR_TEAM))
-			{
-				Team team = plugin.getContext().getTeam(getStateChatValue(player, StateChat.TEAM_NAME));
-
-				ChatColor color = null ;
-				
-				for (ChatColor acolor : ChatColor.values())
-				{
-					if (message.equals(acolor.name()))
-					{
-						color = acolor;
-					}
-				}
-				
-				if (color == null)
-				{
-					ev.getPlayer().sendMessage(ChatColor.DARK_RED + "Invalid color");
-					removePlayerStates(player);
+				if (message.length() > 16){
+					ev.getPlayer().sendMessage(ChatColor.DARK_RED + "Team name can't be longer than 16 characters");
 					return;
 				}
 				
-				player.sendMessage(ChatColor.GRAY + "Team " + team.getColor() + team.getName() + ChatColor.GRAY + " is now in " + color + color.name() + ChatColor.GRAY + ".");
+				player.sendMessage(ChatColor.GRAY + "Team " + team.getColor() + team.getName() + ChatColor.GRAY + " is now called " + team.getColor() + message + ChatColor.GRAY + ".");
 				
-				team.setColor(color);
+				String oldName = team.getName();
+				
+				team.setName(message);
+				
+				org.bukkit.scoreboard.Team newScoreboardTeam = plugin.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(message);
 				
 				for(Player play : team.getPlayers())
 				{
+					team.getScoreboardTeam().removeEntry(player.getName());
 					play.setPlayerListName(team.getColor()+"["+team.getName()+"] "+player.getDisplayName());
+					newScoreboardTeam.addEntry(player.getName());
 				}
+				
+				team.getScoreboardTeam().unregister();
+				team.setScoreboardTeam(newScoreboardTeam);
+				
+				plugin.getContext().getTeams().remove(oldName);
+				plugin.getContext().getTeams().put(team.getName(),team);
 				
 				removePlayerStates(player);
 				return;
@@ -228,7 +215,7 @@ public class ChatInventory implements Listener
 	 */
 	public void changeLastState(Player p, StateChat etat)
 	{
-		dernier_etat.put(p, etat);
+		last_state.put(p, etat);
 	}
 	
 	/**
@@ -240,7 +227,7 @@ public class ChatInventory implements Listener
 		if (isInChatInventory(p))
 		{
 			states.remove(p);
-			dernier_etat.remove(p);
+			last_state.remove(p);
 		}
 	}
 	
@@ -249,7 +236,7 @@ public class ChatInventory implements Listener
 	 */
 	public static boolean isInChatInventory(Player p)
 	{
-		return states.containsKey(p);
+		return last_state.containsKey(p);
 	}
 	
 	/**
@@ -265,7 +252,7 @@ public class ChatInventory implements Listener
 	 * @return	Structure according to the last state
 	 */
 	public static Map<Player, StateChat> getLastState(){
-		return dernier_etat;
+		return last_state;
 	}
 }
 
@@ -276,7 +263,6 @@ enum StateChat
 	ADD_PLAYER,
 	TEAM_NAME,
 	RENAME_TEAM,
-	CHANGE_COLOR_TEAM,
 	CREATE_KIT_NAME,
 	RENAME_KIT,
 	KIT_NAME;

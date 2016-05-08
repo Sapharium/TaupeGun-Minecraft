@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -110,9 +111,20 @@ public class Context {
 		
 		// Initialize available colors
 		availableColors = new ArrayList<ChatColor>();
-		for (ChatColor color: ChatColor.values()){
-			availableColors.add(color);
-		}
+		
+		// Add manually available colors
+		availableColors.add(ChatColor.BLACK);
+		availableColors.add(ChatColor.WHITE);
+		availableColors.add(ChatColor.BLUE);
+		availableColors.add(ChatColor.GREEN);
+		availableColors.add(ChatColor.YELLOW);
+		availableColors.add(ChatColor.RED);
+		availableColors.add(ChatColor.GOLD);
+		availableColors.add(ChatColor.DARK_PURPLE);
+		availableColors.add(ChatColor.DARK_RED);
+		availableColors.add(ChatColor.DARK_AQUA);
+		availableColors.add(ChatColor.DARK_BLUE);
+		availableColors.add(ChatColor.AQUA);
 		
 	}
 	
@@ -199,6 +211,10 @@ public class Context {
 		
 	}
 	
+	public boolean isAlreadyInATeam(Player player){
+		return playersTeams.containsKey(player);
+	}
+	
 	/**
 	 * Add a new kit
 	 * @param kitName	Name of the kit
@@ -259,7 +275,7 @@ public class Context {
 	 * @return	Team instance according to the given name
 	 */
 	public Team getTeam(String teamName){
-		return teams.get(teamName);
+		return teams.get(ChatColor.stripColor(teamName));
 	}
 	
 	/**
@@ -284,16 +300,17 @@ public class Context {
 	}
 	
 	/**
-	 * Change the color of the Team
+	 * Change the color of the Team (random)
 	 * @param teamName	Name of the team
-	 * @param color	Color of the team
 	 */
-	public void changeTeamColor(Team team, ChatColor color){
+	public void changeTeamColor(Team team){
 		
 		availableColors.add(team.getColor());
 		
-		team.setColor(color);
+		ChatColor color = randomColor();
 		
+		team.setColor(color);
+	
 		availableColors.remove(team.getColor());
 		
 		team.getScoreboardTeam().setPrefix(team.getColor()+"");
@@ -322,7 +339,6 @@ public class Context {
 
 		Team team = playersTeams.get(player);
 		team.removePlayer(player);
-		team.getScoreboardTeam().removeEntry(player.getDisplayName());
 		
 		playersTeams.remove(player);
 		
@@ -342,10 +358,11 @@ public class Context {
 		
 		for (Player player: playersToRemoveFromTeam){
 			team.removePlayer(player);
-			team.getScoreboardTeam().removeEntry(player.getDisplayName());
 		}
 		
 		availableColors.add(team.getColor());
+		
+		team.getScoreboardTeam().unregister();
 		
 	}
 	
