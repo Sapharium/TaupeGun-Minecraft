@@ -55,10 +55,6 @@ public class Team {
 		this.spawningLocation = newLocation;
 		this.scoreboardTeam = newScoreboardTeam;
 		
-		// Additional things
-		scoreboardTeam.setPrefix(this.color+"");
-		scoreboardTeam.setSuffix(ChatColor.RESET+"");
-		
 	}
 	
 	/**

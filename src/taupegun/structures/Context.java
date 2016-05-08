@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -108,6 +109,7 @@ public class Context {
 		this.playersTeams = new HashMap<Player,Team>();
 		this.kits = new ArrayList<Kit>();
 		this.molesWaitingKit = new ArrayList<Player>();
+		this.moles = new ArrayList<Player>();
 		
 		// Initialize available colors
 		availableColors = new ArrayList<ChatColor>();
@@ -162,12 +164,11 @@ public class Context {
 	 */
 	public Team addTeam(String teamName){
 		
-		// Add the score board team
-		org.bukkit.scoreboard.Team t = plugin.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(teamName);
-		
-		Team team = new Team(teamName,randomColor(),randomLocation(),t);
+		Team team = new Team(teamName,randomColor(),randomLocation(),null);
 		
 		teams.put(teamName, team);
+		
+		plugin.MatchInfo();
 		
 		return team;
 		
@@ -181,6 +182,8 @@ public class Context {
 		
 		// Add a classic team
 		Team team =  addTeam(molesTeamName);
+		
+		// Team will be added to scoreboard when the first mole will be revealed
 		
 		// But we notice that it's a team of moles
 		molesTeams.add(team);
@@ -205,14 +208,89 @@ public class Context {
 	 */
 	public void addPlayerToATeam(Player player, Team team){
 	
+		plugin.getLogger().log(Level.INFO, "Count players"+team.countPlayer()+" with "+team.getPlayers());
 		team.addPlayer(player);
 		playersTeams.put(player, team);
 		team.getScoreboardTeam().addEntry(player.getDisplayName());
+		plugin.MatchInfo();
+	}
+	
+	/**
+	 * Check is a player is already in a team
+	 * @param player	The player to check
+	 * @return	Yes if so, else false
+	 */
+	public boolean isAlreadyInATeam(Player player){
+
+		boolean check = false;
+		
+		Iterator<Player> it = playersTeams.keySet().iterator();
+		
+		while (it.hasNext() && check == false){
+			
+			Player play = it.next();
+			
+			if (play.getName().equalsIgnoreCase(player.getName())){
+				check = true;
+			}
+			
+		}
+		
+		return check;
+	}
+	
+	/**
+	 * Update the Player object when a player is reconnecting
+	 * @param player	new Player structure
+	 */
+	public void updatePlayer(Player newPlayer){
+		
+		Player oldPlayer = getPlayerInTeamsByName(newPlayer.getName());
+		
+		if (oldPlayer != null){
+			
+			Inventory iv = oldPlayer.getInventory();
+			newPlayer.getInventory().setContents(iv.getContents());
+			
+			// Update all structures
+			Team team = getTeamOfPlayer(oldPlayer);
+			
+			team.removePlayer(oldPlayer);
+			team.addPlayer(newPlayer);
+			
+			playersTeams.remove(oldPlayer);
+			playersTeams.put(newPlayer, team);
+			
+			players.remove(oldPlayer);
+			
+		}
+		
+		players.add(newPlayer);
 		
 	}
 	
-	public boolean isAlreadyInATeam(Player player){
-		return playersTeams.containsKey(player);
+	/**
+	 * Recover a Player structure using his name
+	 * @param playerName	the name of the player
+	 * @return	the current Player structure in "players"
+	 */
+	public Player getPlayerInTeamsByName(String playerName){
+		
+		Player player = null;
+		
+		Iterator<Player> it = players.iterator();
+		
+		while (it.hasNext() && player == null){
+			
+			Player tmpPlayer = it.next();
+			
+			if (tmpPlayer.getName().equalsIgnoreCase(playerName)){
+				player = tmpPlayer;
+			}
+		}
+		
+		return player;
+		
 	}
 	
 	/**
@@ -255,9 +333,20 @@ public class Context {
 		removePlayerFromATeam(player);
 		
 		// Now find the new mole team
-		int rand = new Random().nextInt(molesTeams.size()-1);
+		int rand = new Random().nextInt(molesTeams.size());
 		
 		Team team = molesTeams.get(rand);
+		
+		if (team.countPlayer() == 0){
+			// Add the score board team
+			org.bukkit.scoreboard.Team scoreboardTeam = plugin.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(team.getName());
+			team.setScoreboardTeam(scoreboardTeam);
+			
+			// Additional things
+			scoreboardTeam.setPrefix(team.getColor()+"");
+			scoreboardTeam.setSuffix(ChatColor.RESET+"");
+			
+		}
 		
 		addPlayerToATeam(player,team);
 		
@@ -276,6 +365,14 @@ public class Context {
 	 */
 	public Team getTeam(String teamName){
 		return teams.get(ChatColor.stripColor(teamName));
+	}
+	
+	/**
+	 * Get the structure that links a player to a team
+	 * @return	the HashMap structure associated
+	 */
+	public HashMap<Player,Team> getPlayersTeams(){
+		return playersTeams;
 	}
 	
 	/**
@@ -341,7 +438,7 @@ public class Context {
 		team.removePlayer(player);
 		
 		playersTeams.remove(player);
-		
+		plugin.MatchInfo();
 	}
 	
 	/**
@@ -363,7 +460,7 @@ public class Context {
 		availableColors.add(team.getColor());
 		
 		team.getScoreboardTeam().unregister();
-		
+		plugin.MatchInfo();
 	}
 	
 	/**
@@ -374,23 +471,6 @@ public class Context {
 		
 		kits.remove(kit);
 		
-	}
-	
-	/**
-	 * Add a player who join the server
-	 * @param player
-	 */
-	public void addJoinedPlayer(Player player){
-		players.add(player);
-		/* TODO: Check if first connection*/
-	}
-	
-	/**
-	 * Remove a player who quit the server
-	 */
-	public void removeQuitPlayer(Player player){
-		
-		/* TODO: Keep a history for the player in the case he returns*/
 	}
 	
 	/**
@@ -422,7 +502,7 @@ public class Context {
 	{
 		ChatColor color = null;
 		
-		int rand = new Random().nextInt(availableColors.size()-1);
+		int rand = new Random().nextInt(availableColors.size());
 		
 		color = availableColors.get(rand);
 		
@@ -505,7 +585,7 @@ public class Context {
 	 */
 	public void giveKit(Player player){
 
-		int rand = new Random().nextInt(kits.size()-1);
+		int rand = new Random().nextInt(kits.size());
 		
 		Kit kit = kits.get(rand);
 		
@@ -588,7 +668,7 @@ public class Context {
 	 * @param minutes	minutes left to set
 	 */
 	public void setMinutesLeft(int minutes){
-		
+		this.minutesLeft = minutes;
 	}
 	
 	/**
@@ -596,7 +676,7 @@ public class Context {
 	 * @param seconds	seconds left to set
 	 */
 	public void setSecondsLeft(int seconds){
-			
+		this.secondsLeft = seconds;
 	}
 	
 	/**
@@ -604,15 +684,7 @@ public class Context {
 	 * @param minutes	minutes moles left to set
 	 */
 	public void setMinutesMolesLeft(int minutes){
-		
-	}
-	
-	/**
-	 * Set seconds moles left
-	 * @param minutes	seconds moles left to set
-	 */
-	public void setSecondsMolesLeft(int minutes){
-		
+		this.minutesMolesLeft = minutes;
 	}
 	
 	/**
@@ -675,7 +747,7 @@ public class Context {
 	}
 	
 	/**
-	 * Incrmeents the episode number
+	 * Increments the episode number
 	 * @return	the new episode number
 	 */
 	public int incEpisode(){

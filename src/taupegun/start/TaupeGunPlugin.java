@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -369,14 +370,14 @@ public class TaupeGunPlugin extends JavaPlugin{
 					context.setNumberTeamMoles(config.getInt("moles.number_team_moles"));
 					context.setMolesPerMolesTeam(numberOfMolesPerMolesTeam);
 					
+					// Choose moles now for the future
+					startRandomMoles();
+					
 					// Initialize moles teams
 					for(int i = 1; i <= context.getNumberTeamMoles(); i++)
 					{
 						context.addMolesTeam("Moles-"+i);
 					}
-					
-					// Choose moles now for the future
-					startRandomMoles();
 					
 					// Set configuration values
 					context.setMinutesLeft(config.getInt("episodes.time"));
@@ -419,28 +420,30 @@ public class TaupeGunPlugin extends JavaPlugin{
 							notifyPlayersOnBroadcast("Go",ChatColor.GREEN,true);
 							
 							new Timer(TaupeGunPlugin.getPlugin()).runTaskTimer(TaupeGunPlugin.getPlugin(), 20L, 20L);
-							
+							getLogger().log(Level.INFO, "Players: "+context.getPlayersTeams());
 							for (Entry<String,Team> entry : TaupeGunPlugin.getPlugin().getContext().getTeams().entrySet())
 							{
 								Team team = entry.getValue();
-								team.getScoreboardTeam().setAllowFriendlyFire(true);
 								
-								for (Player player : team.getPlayers())
-								{		
-									// Teleport and configure players
-									player.teleport(team.getSpawningLocation());
-									player.setGameMode(GameMode.SURVIVAL);
-									player.setExp(0F);
-									player.setLevel(0);
-									player.getInventory().clear();
-									player.getInventory().setArmorContents(new ItemStack[] { new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR) });
-									player.setHealth(20D);
-									player.setExhaustion(20F);
-									player.setFoodLevel(20);
-									player.getActivePotionEffects().clear();
-									player.setCompassTarget(team.getSpawningLocation());
-									
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20, 255));
+								if (team.countPlayer() != 0){
+									team.getScoreboardTeam().setAllowFriendlyFire(true);
+									for (Player player : team.getPlayers())
+									{		
+										// Teleport and configure players
+										player.teleport(team.getSpawningLocation());
+										player.setGameMode(GameMode.SURVIVAL);
+										player.setExp(0F);
+										player.setLevel(0);
+										player.getInventory().clear();
+										player.getInventory().setArmorContents(new ItemStack[] { new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR) });
+										player.setHealth(20D);
+										player.setExhaustion(20F);
+										player.setFoodLevel(20);
+										player.getActivePotionEffects().clear();
+										player.setCompassTarget(team.getSpawningLocation());
+										
+										player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20, 255));
+									}
 								}
 							}
 						}
@@ -468,9 +471,10 @@ public class TaupeGunPlugin extends JavaPlugin{
 		
 			if (c.getName().equalsIgnoreCase("reveal"))
 			{
-				for(Player p : getServer().getOnlinePlayers())
+				notifyPlayersOnBroadcast(s.getName()+" is a mole !", ChatColor.RED, true);
+				
+				for(Player p : plugin.getContext().getAllPlayers())
 				{
-					notifyPlayersOnBroadcast(s.getName()+" is a mole", ChatColor.RED, true);
 					p.playSound(p.getLocation(), Sound.GHAST_SCREAM, 1.0F, 1.0F);
 			
 				}
@@ -489,9 +493,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 				
 				for(Player player : context.getMoles())
 				{
-					if(!player.equals((Player) s)){
-						player.sendMessage(ChatColor.DARK_RED+""+ChatColor.ITALIC + "[Mole <"+ChatColor.RED+""+ChatColor.ITALIC+team.getName()+""+ChatColor.DARK_RED+ChatColor.ITALIC+">] " + ChatColor.RESET + moleMessage(a));
-					}
+					player.sendMessage(ChatColor.DARK_RED+""+ChatColor.ITALIC + "[Mole <"+ChatColor.RED+""+ChatColor.ITALIC+team.getName()+""+ChatColor.DARK_RED+ChatColor.ITALIC+">] " + ChatColor.RESET + moleMessage(a));
 				}
 				
 				return true;
@@ -538,7 +540,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 		
 		ob.getScore(ChatColor.GRAY + txt + ChatColor.WHITE + context.getEpisode()).setScore(-1);
 		ob.getScore(""+(context.countAllPlayers()+" "+ChatColor.GRAY + "Players")).setScore(-2);
-		ob.getScore(""+(context.countAllTeams()+""+ChatColor.GRAY + " Teams")).setScore(-3);
+		ob.getScore(""+(scoreboard.getTeams().size()+""+ChatColor.GRAY + " Teams")).setScore(-3);
 		ob.getScore("").setScore(-4);
 		ob.getScore(""+(ml + ChatColor.GRAY + ":" + ChatColor.WHITE + sl)).setScore(-5);
 		
@@ -587,7 +589,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 		int teamsSize = context.getTeams().size();
 		int molesPerTeam = config.getInt("moles.moles_per_team");
 		int numberTeamMoles = config.getInt("moles.number_team_moles");
-		double molesPerMolesTeam = Math.round((teamsSize*molesPerTeam)/numberTeamMoles);
+		double molesPerMolesTeam = (teamsSize*molesPerTeam)/(double)numberTeamMoles;
 		
 		int sameNumber = sameNumberPlayersInEachTeam();
 		
@@ -603,7 +605,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 				p.sendMessage(ChatColor.RED+" There is less teams ("+teamsSize+") than teams of moles ("+numberTeamMoles+")");
 			}
 			else{
-				molesPerMolesTeamResult = Integer.parseInt(Double.toString(molesPerMolesTeam));
+				molesPerMolesTeamResult = new Double(molesPerMolesTeam).intValue();
 				p.sendMessage(ChatColor.GREEN+" Number of moles per moles team validated : "+molesPerMolesTeamResult);
 			}
 			
@@ -642,15 +644,25 @@ public class TaupeGunPlugin extends JavaPlugin{
 		// Find the moles
 		for (Entry<String,Team> entry : context.getTeams().entrySet()){
 			
-			ArrayList<Player> players = entry.getValue().getPlayers();
-			
+			ArrayList<Player> players = new ArrayList<Player>();
+
 			for (int i = 0; i < context.getMolesPerTeam(); i++)
 			{
-				rand = new Random().nextInt(players.size()-1);
+				boolean check = false;
 				
-				context.addMole(players.get(rand));
-				// Avoid two same moles
-				players.remove(rand);
+				while (check == false){
+					rand = new Random().nextInt(entry.getValue().countPlayer());
+					
+					if (!players.contains(entry.getValue().getPlayers().get(rand))){
+						
+						context.addMole(entry.getValue().getPlayers().get(rand));
+						
+						// Avoid two same moles
+						players.add(entry.getValue().getPlayers().get(rand));
+						
+						check = true;
+					}
+				}
 			}
 			
 		}
@@ -664,7 +676,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 	 */
 	public void notifyPlayersOnBroadcast(String message, ChatColor color, boolean useTitleManager){
 		
-		getServer().broadcastMessage(ChatColor.GREEN + "---- "+message+" ----");
+		getServer().broadcastMessage(color + message);
 		
 		if (context.isTitleManagerEnabled() && useTitleManager)
 		{

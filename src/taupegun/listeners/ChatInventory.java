@@ -81,6 +81,14 @@ public class ChatInventory implements Listener
 				}
 
 				Team team = plugin.getContext().addTeam(message);
+				// Add the score board team
+				org.bukkit.scoreboard.Team scoreboardTeam = plugin.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(message);
+				team.setScoreboardTeam(scoreboardTeam);
+				
+				// Additional things
+				scoreboardTeam.setPrefix(team.getColor()+"");
+				scoreboardTeam.setSuffix(ChatColor.RESET+"");
+				
 				player.sendMessage(ChatColor.GRAY + "Team " + team.getColor() + team.getName() + ChatColor.GRAY + " has been created");
 				removePlayerStates(player);
 				

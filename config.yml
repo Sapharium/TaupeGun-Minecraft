@@ -5,7 +5,7 @@ map:
     timeFromStartSizeToEndSizeSeconds: 1800
 moles:
     timer: 1
-    mole_per_team: 1
+    moles_per_team: 1
     number_team_moles: 1
     
 doDaylightCycle: "false"

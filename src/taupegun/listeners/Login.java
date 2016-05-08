@@ -1,5 +1,7 @@
 package taupegun.listeners;
 
+import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -11,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import taupegun.start.TaupeGunPlugin;
+import taupegun.structures.Team;
 
 public class Login implements Listener{
 
@@ -24,7 +27,7 @@ public class Login implements Listener{
 	public void onJoin(PlayerJoinEvent ev)
 	{
 		
-		plugin.getContext().addJoinedPlayer(ev.getPlayer());
+		plugin.getContext().updatePlayer(ev.getPlayer());
 		
 		if (!plugin.getContext().hasStarted()){
 			// Game not started
@@ -44,12 +47,20 @@ public class Login implements Listener{
 			if (plugin.getContext().getAllPlayers().contains(ev.getPlayer()))
 			{
 				ev.getPlayer().loadData();
+				
 			}
 			else
 			{
 				ev.getPlayer().setGameMode(GameMode.SPECTATOR);
 				ev.getPlayer().teleport(plugin.getServer().getWorlds().get(0).getSpawnLocation());
 			}
+			
+		}
+		
+		if (plugin.getContext().isAlreadyInATeam(ev.getPlayer())){
+			
+			Team team = plugin.getContext().getTeamOfPlayer(ev.getPlayer());
+			ev.getPlayer().setPlayerListName(team.getColor()+"["+team.getName()+"] "+ev.getPlayer().getDisplayName());
 			
 		}
 		
