@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -292,6 +293,46 @@ public class Global implements Listener{
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent ev)
 	{
+		Player player = ev.getPlayer();
+		String message = ev.getMessage();
+		
+		if(!plugin.getContext().isAlreadyInATeam(player) && player.getGameMode() == GameMode.SPECTATOR)
+		{
+			ev.setCancelled(true);
+			for (Player play : plugin.getServer().getOnlinePlayers())
+			{
+				play.sendMessage(ChatColor.GRAY + "[Spec] " + ChatColor.RESET + "<"+ev.getPlayer().getName()+"> "+ev.getMessage());
+			}
+			return;
+		}
+		
+		if (plugin.getContext().isAlreadyInATeam(player)){
+			
+			ev.setCancelled(true);
+			
+			Team team = plugin.getContext().getTeamOfPlayer(player);
+			
+			// Check if global message or team message
+			if (message.startsWith("!")){
+				
+				message = message.substring(1);
+				
+				plugin.getServer().broadcastMessage(team.getColor()+"<"+player.getName()+">"+ChatColor.RESET+" "+message);
+				
+			}
+			else{
+				
+				for (Player play : team.getPlayers()){
+					play.sendMessage(team.getColor()+"<"+player.getName()+" -> team>"+ChatColor.RESET+" "+message);
+				}
+			}
+			
+		}
+		else {
+			
+			ev.setFormat("<"+ev.getPlayer().getName()+"> "+ev.getMessage());
+			
+		}
 		
 	}
 
