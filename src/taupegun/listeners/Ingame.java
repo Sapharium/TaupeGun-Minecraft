@@ -5,9 +5,11 @@ import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import taupegun.start.TaupeGunPlugin;
 import taupegun.structures.Team;
@@ -49,6 +51,55 @@ public class Ingame implements Listener{
 		
 		if (plugin.getContext().isInvincible()){
 			ev.setCancelled(true);
+		}
+		
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerChat(AsyncPlayerChatEvent ev)
+	{
+		Player player = ev.getPlayer();
+		String message = ev.getMessage();
+		
+		if (plugin.getContext().hasStarted()){
+		
+			if(!plugin.getContext().isAlreadyInATeam(player) && player.getGameMode() == GameMode.SPECTATOR)
+			{
+				ev.setCancelled(true);
+				for (Player play : plugin.getServer().getOnlinePlayers())
+				{
+					play.sendMessage(ChatColor.GRAY + "[Spec] " + ChatColor.RESET + "<"+ev.getPlayer().getName()+"> "+ev.getMessage());
+				}
+				return;
+			}
+			
+			if (plugin.getContext().isAlreadyInATeam(player)){
+				
+				ev.setCancelled(true);
+				
+				Team team = plugin.getContext().getTeamOfPlayer(player);
+				
+				// Check if global message or team message
+				if (message.startsWith("!")){
+					
+					message = message.substring(1);
+					
+					plugin.getServer().broadcastMessage(team.getColor()+"<"+player.getName()+">"+ChatColor.GRAY+" "+message);
+					
+				}
+				else{
+					
+					for (Player play : team.getPlayers()){
+						play.sendMessage(team.getColor()+"<"+player.getName()+" -> team>"+ChatColor.GRAY+" "+message);
+					}
+				}
+				
+			}
+			else {
+				
+				ev.setFormat("<"+ev.getPlayer().getName()+"> "+ev.getMessage());
+				
+			}
 		}
 		
 	}

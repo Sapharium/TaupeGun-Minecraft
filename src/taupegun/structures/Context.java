@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -67,6 +66,11 @@ public class Context {
 	private ArrayList<ChatColor> availableColors = null;
 	
 	/**
+	 * Random object
+	 */
+	private Random random = new Random();
+	
+	/**
 	 * Time information
 	 */
 	private int minutesLeft = 0;
@@ -115,16 +119,13 @@ public class Context {
 		// Add manually available colors
 		availableColors.add(ChatColor.BLACK);
 		availableColors.add(ChatColor.WHITE);
-		availableColors.add(ChatColor.BLUE);
+		availableColors.add(ChatColor.AQUA);
 		availableColors.add(ChatColor.GREEN);
 		availableColors.add(ChatColor.YELLOW);
 		availableColors.add(ChatColor.RED);
 		availableColors.add(ChatColor.GOLD);
 		availableColors.add(ChatColor.DARK_PURPLE);
-		availableColors.add(ChatColor.DARK_RED);
-		availableColors.add(ChatColor.DARK_AQUA);
 		availableColors.add(ChatColor.DARK_BLUE);
-		availableColors.add(ChatColor.AQUA);
 		
 	}
 	
@@ -206,7 +207,6 @@ public class Context {
 	 */
 	public void addPlayerToATeam(Player player, Team team){
 	
-		plugin.getLogger().log(Level.INFO, "Count players"+team.countPlayer()+" with "+team.getPlayers());
 		team.addPlayer(player);
 		playersTeams.put(player, team);
 		team.getScoreboardTeam().addEntry(player.getDisplayName());
@@ -331,7 +331,7 @@ public class Context {
 		removePlayerFromATeam(player);
 		
 		// Now find the new mole team
-		int rand = new Random().nextInt(molesTeams.size());
+		int rand = random.nextInt(molesTeams.size());
 		
 		Team team = molesTeams.get(rand);
 		
@@ -400,9 +400,9 @@ public class Context {
 	 */
 	public void changeTeamColor(Team team){
 		
-		availableColors.add(team.getColor());
-		
 		ChatColor color = randomColor();
+		
+		availableColors.add(team.getColor());
 		
 		team.setColor(color);
 	
@@ -479,8 +479,8 @@ public class Context {
 	{
 		int size = plugin.getConfig().getInt("map.startSize");
 		
-		double rx = new Random().nextInt(size*2);
-		double rz = new Random().nextInt(size*2);
+		double rx = random.nextInt(size*2);
+		double rz = random.nextInt(size*2);
 		
 		rx -= size;
 		rz -= size;
@@ -500,7 +500,7 @@ public class Context {
 	{
 		ChatColor color = null;
 		
-		int rand = new Random().nextInt(availableColors.size());
+		int rand = random.nextInt(availableColors.size());
 		
 		color = availableColors.get(rand);
 		
@@ -583,7 +583,7 @@ public class Context {
 	 */
 	public void giveKit(Player player){
 
-		int rand = new Random().nextInt(kits.size());
+		int rand = random.nextInt(kits.size());
 		
 		Kit kit = kits.get(rand);
 		

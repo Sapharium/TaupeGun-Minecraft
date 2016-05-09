@@ -4,6 +4,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -76,6 +78,43 @@ public class Preparation implements Listener{
 		if(!plugin.getContext().hasStarted())
 		{
 			ev.setCancelled(true);
+		}
+		
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent ev){
+		
+		if (!plugin.getContext().hasStarted()){
+		
+			if(plugin.getContext().isAlreadyInATeam(ev.getPlayer())){
+				
+				Block block = ev.getPlayer().getLocation().subtract(0, 1, 0).getBlock();
+				
+				if (block.getType().equals(Material.STAINED_GLASS) && !ev.getPlayer().isFlying()){
+				
+					ChatColor color = plugin.getContext().getTeamOfPlayer(ev.getPlayer()).getColor();
+					
+					byte sid = 0;
+					
+					// Get associated color
+					
+					if (color.equals(ChatColor.DARK_BLUE)) { sid = (byte) new Integer(11).intValue();}
+					if (color.equals(ChatColor.DARK_PURPLE)) { sid = (byte) new Integer(10).intValue();}
+					if (color.equals(ChatColor.GOLD)) { sid = (byte) new Integer(1).intValue();}
+					if (color.equals(ChatColor.RED)) { sid = (byte) new Integer(14).intValue();}
+					if (color.equals(ChatColor.YELLOW)) { sid = (byte) new Integer(4).intValue();}
+					if (color.equals(ChatColor.GREEN)) { sid = (byte) new Integer(5).intValue();}
+					if (color.equals(ChatColor.AQUA)) { sid = (byte) new Integer(3).intValue();}
+					if (color.equals(ChatColor.WHITE)) { sid = (byte) new Integer(0).intValue();}
+					if (color.equals(ChatColor.BLACK)) { sid = (byte) new Integer(15).intValue();}
+					
+					block.setData(sid);
+				}
+			}
+			
 		}
 		
 	}
