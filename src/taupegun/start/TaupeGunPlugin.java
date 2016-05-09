@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -135,7 +134,9 @@ public class TaupeGunPlugin extends JavaPlugin{
 		w.setTime(12000L);
 		w.setSpawnLocation(0, 200, 0);
 		w.setStorm(false);
-		w.setDifficulty(Difficulty.HARD);
+		for (World world : plugin.getServer().getWorlds()){
+			world.setDifficulty(Difficulty.PEACEFUL);
+		}
 		wb.setCenter(0,0);
 		wb.setSize(getConfig().getDouble("map.startSize")*2);
 		wb.setWarningDistance(10);
@@ -420,7 +421,11 @@ public class TaupeGunPlugin extends JavaPlugin{
 							notifyPlayersOnBroadcast("Go",ChatColor.GREEN,true);
 							
 							new Timer(TaupeGunPlugin.getPlugin()).runTaskTimer(TaupeGunPlugin.getPlugin(), 20L, 20L);
-							getLogger().log(Level.INFO, "Players: "+context.getPlayersTeams());
+							
+							for (World w : plugin.getServer().getWorlds()){
+								w.setDifficulty(Difficulty.HARD);
+							}
+							
 							for (Entry<String,Team> entry : TaupeGunPlugin.getPlugin().getContext().getTeams().entrySet())
 							{
 								Team team = entry.getValue();

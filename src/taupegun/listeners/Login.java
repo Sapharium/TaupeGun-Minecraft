@@ -1,7 +1,5 @@
 package taupegun.listeners;
 
-import java.util.logging.Level;
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -30,6 +28,7 @@ public class Login implements Listener{
 		plugin.getContext().updatePlayer(ev.getPlayer());
 		
 		if (!plugin.getContext().hasStarted()){
+			
 			// Game not started
 			ItemStack is = new ItemStack(Material.SKULL_ITEM, 1, (short)SkullType.PLAYER.ordinal());
 			ItemMeta ccm = is.getItemMeta();
@@ -44,7 +43,7 @@ public class Login implements Listener{
 		else{
 			// Game started
 			// Is the join player was in a team ?
-			if (plugin.getContext().getAllPlayers().contains(ev.getPlayer()))
+			if (plugin.getContext().getTeamOfPlayer(ev.getPlayer()) != null)
 			{
 				ev.getPlayer().loadData();
 				

@@ -3,7 +3,6 @@ package taupegun.structures;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

@@ -120,9 +120,9 @@ public class ChatInventory implements Listener
 				
 				for(Player play : team.getPlayers())
 				{
-					team.getScoreboardTeam().removeEntry(player.getName());
-					play.setPlayerListName(team.getColor()+"["+team.getName()+"] "+player.getDisplayName());
-					newScoreboardTeam.addEntry(player.getName());
+					team.getScoreboardTeam().removeEntry(play.getName());
+					play.setPlayerListName(team.getColor()+"["+team.getName()+"] "+play.getDisplayName());
+					newScoreboardTeam.addEntry(play.getName());
 				}
 				
 				team.getScoreboardTeam().unregister();
@@ -146,7 +146,7 @@ public class ChatInventory implements Listener
 				
 				Kit kit = plugin.getContext().addKit(message);
 
-				player.sendMessage(ChatColor.GRAY + "Kit " + ChatColor.RED + kit.getName() + ChatColor.GRAY + " is created");
+				player.sendMessage(ChatColor.GRAY + "Kit " + ChatColor.GOLD + kit.getName() + ChatColor.GRAY + " is created");
 				
 				removePlayerStates(player);
 				return;

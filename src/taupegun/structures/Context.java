@@ -7,8 +7,6 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

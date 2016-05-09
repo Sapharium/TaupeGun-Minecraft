@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import taupegun.start.TaupeGunPlugin;
+import taupegun.structures.Team;
 
 public class Ingame implements Listener{
 
@@ -32,6 +33,10 @@ public class Ingame implements Listener{
 		{
 			p.playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
 		}
+		
+		Team team = plugin.getContext().getTeamOfPlayer(player);
+		
+		ev.setDeathMessage(team.getColor()+player.getName()+ChatColor.GRAY+" has been killed");
 		
 		player.setGameMode(GameMode.SPECTATOR);
 		plugin.getContext().removePlayerFromATeam(player);

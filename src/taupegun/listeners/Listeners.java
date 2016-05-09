@@ -36,8 +36,8 @@ public class Listeners {
 	private Listeners(TaupeGunPlugin plugin){
 		this.chatInventory = new ChatInventory(plugin);
 		this.loginListener = new Login(plugin);
-		this.globalListener = new Global(plugin,this.chatInventory);
-		this.preparationListener = new Preparation(plugin);
+		this.globalListener = new Global(plugin);
+		this.preparationListener = new Preparation(plugin,this.chatInventory);
 		this.ingameListener = new Ingame(plugin);
 	}
 	
