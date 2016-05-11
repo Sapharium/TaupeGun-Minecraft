@@ -3,7 +3,6 @@ package taupegun.start;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -711,9 +710,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 			}
 		}
 		else{
-				// Find the moles
-				HashMap<String,Team> teams = context.getTeams();
-				
+				// Find the moles				
 				ArrayList<Player> players = new ArrayList<Player>();
 	
 				for (int i = 0; i < context.getMolesPerMolesTeam(); i++)
