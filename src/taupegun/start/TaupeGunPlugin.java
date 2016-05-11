@@ -3,6 +3,7 @@ package taupegun.start;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -118,6 +119,11 @@ public class TaupeGunPlugin extends JavaPlugin{
 		
 		// Generate the world
 		generateWorldConfiguration();
+		
+		// Check game mode mole chosen
+		if (config.getBoolean("moles.gamemode_no_contraint")){
+			context.setGameModeExtended();
+		}
 		
 	}
 	
@@ -342,34 +348,62 @@ public class TaupeGunPlugin extends JavaPlugin{
 						return true;
 					}
 					
-					int numberOfMolesPerMolesTeam = isMolesTeamsPerfect((Player) s);
+					int numberOfMolesPerMolesTeam = -1;
 					
-					if(numberOfMolesPerMolesTeam == -1)
-					{
-						s.sendMessage(ChatColor.DARK_RED + "Moles teams are not perfect, check the above error you received, else :");
-						s.sendMessage(ChatColor.RED + "Check this: ");
-						s.sendMessage(ChatColor.RED + "x->Number of teams");
-						s.sendMessage(ChatColor.RED + "y->Number of moles chosen by team");
-						s.sendMessage(ChatColor.RED + "a->Number of moles teams");
-						s.sendMessage(ChatColor.RED + "b->Number of moles per moles team (or) number of kits");
-						s.sendMessage(ChatColor.RED + "xy=ab");
+					if (!context.isGameModeExtented()){
+					
+						numberOfMolesPerMolesTeam = isMolesTeamsPerfect((Player) s);
 						
-						return true;
+						if(numberOfMolesPerMolesTeam == -1)
+						{
+							s.sendMessage(ChatColor.DARK_RED + "Moles teams are not perfect, check the above error you received, else :");
+							s.sendMessage(ChatColor.RED + "Check this: ");
+							s.sendMessage(ChatColor.RED + "x->Number of teams");
+							s.sendMessage(ChatColor.RED + "y->Number of moles chosen by team");
+							s.sendMessage(ChatColor.RED + "a->Number of moles teams");
+							s.sendMessage(ChatColor.RED + "b->Number of moles per moles team (or) number of kits");
+							s.sendMessage(ChatColor.RED + "xy=ab");
+							
+							return true;
+						}
+						
+						if(context.getKits().size() != 0 && context.getKits().size() != numberOfMolesPerMolesTeam)
+						{
+							s.sendMessage(ChatColor.DARK_RED + "There is a problem with kits :");
+							s.sendMessage(ChatColor.RED + "There is "+context.getKits().size()+" kits but "+numberOfMolesPerMolesTeam+" moles per moles team");
+							
+							return true;
+						}
+						
 					}
-					
-					if(context.getKits().size() != 0 && context.getKits().size() != numberOfMolesPerMolesTeam)
-					{
-						s.sendMessage(ChatColor.DARK_RED + "There is a problem with kits :");
-						s.sendMessage(ChatColor.RED + "There is "+context.getKits().size()+" kits but "+numberOfMolesPerMolesTeam+" moles per moles team");
+					else{
 						
-						return true;
+						numberOfMolesPerMolesTeam = config.getInt("moles.option_extended_gamemode.number_moles");
+						
+						// Check number of players
+						if (context.getAllPlayers().size() <= numberOfMolesPerMolesTeam){
+							s.sendMessage(ChatColor.DARK_RED + "There is a problem with the number of players :");
+							s.sendMessage(ChatColor.RED + "There is "+numberOfMolesPerMolesTeam+" moles but only "+context.getAllPlayers().size()+" players");
+							
+							return true;
+						}
+						
+						
+						// Check number of kits
+						if(context.getKits().size() != 0 && context.getKits().size() != numberOfMolesPerMolesTeam)
+						{
+							s.sendMessage(ChatColor.DARK_RED + "There is a problem with kits :");
+							s.sendMessage(ChatColor.RED + "There is "+context.getKits().size()+" kits but "+numberOfMolesPerMolesTeam+" moles per moles team");
+							
+							return true;
+						}
 					}
 					
 					// START THE GAME
 					
 					// Set moles context
-					context.setMolesPerTeam(config.getInt("moles.moles_per_team"));
-					context.setNumberTeamMoles(config.getInt("moles.number_team_moles"));
+					context.setMolesPerTeam(config.getInt("moles.option_classic_gamemode.moles_per_team"));
+					context.setNumberTeamMoles(config.getInt("moles.option_classic_gamemode.number_team_moles"));
 					context.setMolesPerMolesTeam(numberOfMolesPerMolesTeam);
 					
 					// Choose moles now for the future
@@ -594,8 +628,8 @@ public class TaupeGunPlugin extends JavaPlugin{
 		int molesPerMolesTeamResult = -1;
 		
 		int teamsSize = context.getTeams().size();
-		int molesPerTeam = config.getInt("moles.moles_per_team");
-		int numberTeamMoles = config.getInt("moles.number_team_moles");
+		int molesPerTeam = config.getInt("moles.option_classic_gamemode.moles_per_team");
+		int numberTeamMoles = config.getInt("moles.option_classic_gamemode.number_team_moles");
 		double molesPerMolesTeam = (teamsSize*molesPerTeam)/(double)numberTeamMoles;
 		
 		int sameNumber = sameNumberPlayersInEachTeam();
@@ -648,31 +682,61 @@ public class TaupeGunPlugin extends JavaPlugin{
 	
 		int rand = 0;
 		
-		// Find the moles
-		for (Entry<String,Team> entry : context.getTeams().entrySet()){
-			
-			ArrayList<Player> players = new ArrayList<Player>();
-
-			for (int i = 0; i < context.getMolesPerTeam(); i++)
-			{
-				boolean check = false;
+		if (!context.isGameModeExtented()){
+		
+			// Find the moles
+			for (Entry<String,Team> entry : context.getTeams().entrySet()){
 				
-				while (check == false){
-					rand = new Random().nextInt(entry.getValue().countPlayer());
+				ArrayList<Player> players = new ArrayList<Player>();
+	
+				for (int i = 0; i < context.getMolesPerTeam(); i++)
+				{
+					boolean check = false;
 					
-					if (!players.contains(entry.getValue().getPlayers().get(rand))){
+					while (check == false){
+						rand = context.getRandom().nextInt(entry.getValue().countPlayer());
 						
-						context.addMole(entry.getValue().getPlayers().get(rand));
-						
-						// Avoid two same moles
-						players.add(entry.getValue().getPlayers().get(rand));
-						
-						check = true;
+						if (!players.contains(entry.getValue().getPlayers().get(rand))){
+							
+							context.addMole(entry.getValue().getPlayers().get(rand));
+							
+							// Avoid two same moles
+							players.add(entry.getValue().getPlayers().get(rand));
+							
+							check = true;
+						}
 					}
 				}
+				
 			}
-			
 		}
+		else{
+				// Find the moles
+				HashMap<String,Team> teams = context.getTeams();
+				String[] teamsName = (String[]) teams.keySet().toArray();
+				
+				ArrayList<Player> players = new ArrayList<Player>();
+	
+				for (int i = 0; i < context.getMolesPerMolesTeam(); i++)
+				{
+					boolean check = false;
+					
+					while (check == false){
+						rand = context.getRandom().nextInt(context.getAllPlayers().size());
+						
+						if (!players.contains(context.getAllPlayers().get(rand))){
+							
+							context.addMole(context.getAllPlayers().get(rand));
+							
+							// Avoid two same moles
+							players.add(context.getAllPlayers().get(rand));
+							
+							check = true;
+						}
+					}
+				}
+		}
+		
 		// Now we have moles in each team
 	}
 	

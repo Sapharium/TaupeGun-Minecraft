@@ -89,6 +89,7 @@ public class Context {
 	private boolean molesActivated = false;
 	private boolean titleManagerPluginEnabled = false;
 	private boolean invincible = true;
+	private GAMEMODE_MOLE gameModeMoles = GAMEMODE_MOLE.CLASSIC;
 	
 	/**
 	 * Quantities information
@@ -814,6 +815,26 @@ public class Context {
 		return this.invincible;
 	}
 
+	/**
+	 * Set the game mode mole as extended
+	 */
+	public void setGameModeExtended(){
+		gameModeMoles = GAMEMODE_MOLE.EXTENDED;
+	}
+	
+	/**
+	 * Check if game mode is extended
+	 * @return	True if it so, else false
+	 */
+	public boolean isGameModeExtented(){
+		if (gameModeMoles.equals(GAMEMODE_MOLE.EXTENDED)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
 	/* QUANTITIES FUNCTIONS */
 	
 	
@@ -864,4 +885,24 @@ public class Context {
 	public void setMolesPerMolesTeam(int molesPerMolesTeam) {
 		this.molesPerMolesTeam = molesPerMolesTeam;
 	}
+	
+	/**
+	 * Get the random object for the plugin
+	 * @return	the Random object
+	 */
+	public Random getRandom(){
+		return this.random;
+	}
+}
+
+
+
+/**
+ * Classic mod is the classic game with constraints about number of players, extended is a mod where X moles are chosen whatever are their primary team.
+ * @author LetMeR00t
+ *
+ */
+enum GAMEMODE_MOLE{
+	CLASSIC,
+	EXTENDED
 }
