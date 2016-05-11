@@ -1,7 +1,7 @@
 # TaupeGunINSA
 Plugin Taupe Gun for Minecraft 
 ## Supported minecraft version
-1.8.9
+1.8.8-1.8.9
 
 ## Description
 - Same rules that UHPlugin (UHC) : world 2000x2000, hardcore, no natural regeneration (map settings are editable)
