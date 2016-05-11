@@ -713,7 +713,6 @@ public class TaupeGunPlugin extends JavaPlugin{
 		else{
 				// Find the moles
 				HashMap<String,Team> teams = context.getTeams();
-				String[] teamsName = (String[]) teams.keySet().toArray();
 				
 				ArrayList<Player> players = new ArrayList<Player>();
 	
