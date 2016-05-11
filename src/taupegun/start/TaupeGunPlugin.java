@@ -403,7 +403,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 					
 					// Set moles context
 					context.setMolesPerTeam(config.getInt("moles.option_classic_gamemode.moles_per_team"));
-					context.setNumberTeamMoles(config.getInt("moles.option_classic_gamemode.number_team_moles"));
+					context.setNumberTeamMoles(config.getInt("moles.number_team_moles"));
 					context.setMolesPerMolesTeam(numberOfMolesPerMolesTeam);
 					
 					// Choose moles now for the future
@@ -629,7 +629,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 		
 		int teamsSize = context.getTeams().size();
 		int molesPerTeam = config.getInt("moles.option_classic_gamemode.moles_per_team");
-		int numberTeamMoles = config.getInt("moles.option_classic_gamemode.number_team_moles");
+		int numberTeamMoles = config.getInt("moles.number_team_moles");
 		double molesPerMolesTeam = (teamsSize*molesPerTeam)/(double)numberTeamMoles;
 		
 		int sameNumber = sameNumberPlayersInEachTeam();
