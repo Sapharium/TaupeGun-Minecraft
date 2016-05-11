@@ -3,6 +3,7 @@ package taupegun.start;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -710,24 +711,48 @@ public class TaupeGunPlugin extends JavaPlugin{
 			}
 		}
 		else{
-				// Find the moles				
+				// Find the moles
+				// Distribute moles in teams randomly but balanced between teams
+				ArrayList<Team> teams = new ArrayList<Team>();
 				ArrayList<Player> players = new ArrayList<Player>();
-	
+				String[] teamsName = (String[]) context.getTeams().keySet().toArray();
+				
 				for (int i = 0; i < context.getMolesPerMolesTeam(); i++)
 				{
+					// Check is true when a good mole in a good team has been found
 					boolean check = false;
 					
+					// while a new team (good team = not chosen) has not been found
 					while (check == false){
-						rand = context.getRandom().nextInt(context.getAllPlayers().size());
 						
-						if (!players.contains(context.getAllPlayers().get(rand))){
+						int randTeam = context.getRandom().nextInt(context.getTeams().size());
+						
+						Team team = context.getTeams().get(teamsName[randTeam]);
+						
+						if (!teams.contains(team)){
 							
-							context.addMole(context.getAllPlayers().get(rand));
+							// while a new mole has not been found
+							while (check == false){
 							
-							// Avoid two same moles
-							players.add(context.getAllPlayers().get(rand));
+								rand = context.getRandom().nextInt(team.countPlayer());
+								
+								if (!players.contains(team.getPlayers().get(rand))){
+									
+									context.addMole(team.getPlayers().get(rand));
+									
+									// Avoid two same moles
+									players.add(team.getPlayers().get(rand));
+									
+									check = true;
+								}
+							}
 							
-							check = true;
+							teams.add(team);
+							
+							// if we have check all teams, we clear chosen team and we start again to continue
+							if (teams.size() == context.getTeams().size()){
+								teams.clear();
+							}
 						}
 					}
 				}
