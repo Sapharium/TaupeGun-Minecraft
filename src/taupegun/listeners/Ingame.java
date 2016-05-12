@@ -43,6 +43,9 @@ public class Ingame implements Listener{
 		player.setGameMode(GameMode.SPECTATOR);
 		plugin.getContext().removePlayerFromATeam(player);
 		plugin.getContext().getAllPlayers().remove(player);
+		if (plugin.getContext().isMole(player)){
+			plugin.getContext().removeMole(player);
+		}
 	}
 	
 	@EventHandler

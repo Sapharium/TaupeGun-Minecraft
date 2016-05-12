@@ -549,6 +549,27 @@ public class TaupeGunPlugin extends JavaPlugin{
 				
 				return true;
 			}
+			
+			if (c.getName().equalsIgnoreCase("resurrect"))
+			{
+				
+				Player player = plugin.getContext().getPlayerOnlineByName(a[1]);
+				Team team = plugin.getContext().getTeam(a[2]);
+				
+				if (player != null && team != null){
+					
+					// We add the player
+					plugin.getContext().addPlayerToATeam(player, team);
+						
+					plugin.getContext().getAllPlayers().add(player);
+					
+					plugin.getServer().broadcastMessage(player.getName()+" came back to life and has joined the team "+team.getColor()+team.getName());
+					
+					
+				}
+				
+				return true;
+			}
 		}
 		
 		return false;
@@ -715,7 +736,12 @@ public class TaupeGunPlugin extends JavaPlugin{
 				// Distribute moles in teams randomly but balanced between teams
 				ArrayList<Team> teams = new ArrayList<Team>();
 				ArrayList<Player> players = new ArrayList<Player>();
-				String[] teamsName = (String[]) context.getTeams().keySet().toArray();
+				ArrayList<String> teamsName = new ArrayList<String>();
+				Iterator<String> it = context.getTeams().keySet().iterator();
+				
+				while (it.hasNext()){
+					teamsName.add(it.next());
+				}
 				
 				for (int i = 0; i < context.getMolesPerMolesTeam(); i++)
 				{
@@ -727,7 +753,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 						
 						int randTeam = context.getRandom().nextInt(context.getTeams().size());
 						
-						Team team = context.getTeams().get(teamsName[randTeam]);
+						Team team = context.getTeams().get(teamsName.get(randTeam));
 						
 						if (!teams.contains(team)){
 							

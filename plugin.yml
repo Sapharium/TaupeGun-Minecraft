@@ -16,3 +16,7 @@ commands:
   t:
     description: Speak with other moles
     usage: /t
+  resurrect:
+    description: Resurrect a player after death
+    usage: /t playerName teamName
+    

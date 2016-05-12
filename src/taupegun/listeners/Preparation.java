@@ -140,11 +140,6 @@ public class Preparation implements Listener{
 					// Check if the player is already in a team
 					if (plugin.getContext().isAlreadyInATeam(player)){
 						
-						// Check if it's the same team
-						if (team.getName().equalsIgnoreCase(ChatColor.stripColor(ev.getCurrentItem().getItemMeta().getDisplayName()))){
-							return;
-						}
-						
 						// We change the team of the player
 						plugin.getContext().changeTeamPlayer(player, team);
 						

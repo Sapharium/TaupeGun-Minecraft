@@ -202,6 +202,22 @@ public class Context {
 	}
 	
 	/**
+	 * Remove a mole (used when a player died before the moles time
+	 * @param player	The player to remove
+	 */
+	public void removeMole(Player player){
+		
+		if (moles.contains(player)){
+			moles.remove(player);
+		}
+		
+		if (molesWaitingKit.contains(player)){
+		molesWaitingKit.remove(player);
+		}
+		
+	}
+	
+	/**
 	 * Add a player to a team
 	 * @param player	Player to add
 	 * @param team	Team that will have the new player
@@ -602,6 +618,29 @@ public class Context {
 		
 		molesWaitingKit.remove(player);
 		
+	}
+	
+	/**
+	 * Get player who is online by name
+	 * @param name	name of the player
+	 * @return	the player structure associated
+	 */
+	public Player getPlayerOnlineByName(String name){
+		
+		Player player = null;
+		
+		Iterator<? extends Player> it = plugin.getServer().getOnlinePlayers().iterator();
+		
+		while (player == null && it.hasNext()){
+			Player tmpPlayer = it.next();
+			
+			if (tmpPlayer.getName().equalsIgnoreCase(name)){
+				player = tmpPlayer;
+			}
+			
+		}
+				
+		return player;
 	}
 	
 	/**
