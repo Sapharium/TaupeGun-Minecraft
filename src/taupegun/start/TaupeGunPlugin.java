@@ -507,6 +507,40 @@ public class TaupeGunPlugin extends JavaPlugin{
 			}
 		}
 		
+		if (c.getName().equalsIgnoreCase("resurrect"))
+		{
+			
+			Player player = plugin.getContext().getPlayerOnlineByName(a[1]);
+			Team team = plugin.getContext().getTeam(a[2]);
+			
+			if (player != null){
+				
+				if (team != null){
+				
+					// We add the player
+					plugin.getContext().addPlayerToATeam(player, team);
+						
+					plugin.getContext().getAllPlayers().add(player);
+					
+					// Change gamemode and teleport player
+					player.setGameMode(GameMode.SURVIVAL);
+					
+					player.teleport(team.getPlayers().get(0).getLocation());
+					
+					plugin.getServer().broadcastMessage(player.getName()+" came back to life and has joined the team "+team.getColor()+team.getName());
+				
+				}
+				else{
+					s.sendMessage(ChatColor.DARK_RED+"This team doesn't exist");
+				}
+			}
+			else{
+				s.sendMessage(ChatColor.DARK_RED+"This player doesn't exist");
+			}
+			
+			return true;
+		}
+		
 		// Check if mole otherwise
 		if (s instanceof Player && context.hasStarted() && context.isMolesActivated() && context.isMole((Player) s)){
 		
@@ -550,39 +584,6 @@ public class TaupeGunPlugin extends JavaPlugin{
 				return true;
 			}
 			
-			if (c.getName().equalsIgnoreCase("resurrect"))
-			{
-				
-				Player player = plugin.getContext().getPlayerOnlineByName(a[1]);
-				Team team = plugin.getContext().getTeam(a[2]);
-				
-				if (player != null){
-					
-					if (team != null){
-					
-						// We add the player
-						plugin.getContext().addPlayerToATeam(player, team);
-							
-						plugin.getContext().getAllPlayers().add(player);
-						
-						// Change gamemode and teleport player
-						player.setGameMode(GameMode.SURVIVAL);
-						
-						player.teleport(team.getPlayers().get(0).getLocation());
-						
-						plugin.getServer().broadcastMessage(player.getName()+" came back to life and has joined the team "+team.getColor()+team.getName());
-					
-					}
-					else{
-						s.sendMessage(ChatColor.DARK_RED+"This team doesn't exist");
-					}
-				}
-				else{
-					s.sendMessage(ChatColor.DARK_RED+"This player doesn't exist");
-				}
-				
-				return true;
-			}
 		}
 		
 		return false;
