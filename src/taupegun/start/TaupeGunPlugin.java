@@ -509,9 +509,9 @@ public class TaupeGunPlugin extends JavaPlugin{
 		
 		if (c.getName().equalsIgnoreCase("resurrect"))
 		{
-			if (a.length == 3){
-				Player player = plugin.getContext().getPlayerOnlineByName(a[1]);
-				Team team = plugin.getContext().getTeam(a[2]);
+			if (a.length == 2){
+				Player player = plugin.getContext().getPlayerOnlineByName(a[0]);
+				Team team = plugin.getContext().getTeam(a[1]);
 				
 				if (player != null){
 					
@@ -531,11 +531,11 @@ public class TaupeGunPlugin extends JavaPlugin{
 					
 					}
 					else{
-						s.sendMessage(ChatColor.DARK_RED+"This team doesn't exist");
+						s.sendMessage(ChatColor.DARK_RED+"Team "+a[1]+" doesn't exist");
 					}
 				}
 				else{
-					s.sendMessage(ChatColor.DARK_RED+"This player doesn't exist");
+					s.sendMessage(ChatColor.DARK_RED+"Player "+a[0]+" doesn't exist");
 				}
 			}
 			else{
