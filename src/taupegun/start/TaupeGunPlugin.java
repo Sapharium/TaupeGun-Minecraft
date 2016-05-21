@@ -563,6 +563,11 @@ public class TaupeGunPlugin extends JavaPlugin{
 						
 					plugin.getContext().getAllPlayers().add(player);
 					
+					// Change gamemode and teleport player
+					player.setGameMode(GameMode.SURVIVAL);
+					
+					player.teleport(team.getPlayers().get(0).getLocation());
+					
 					plugin.getServer().broadcastMessage(player.getName()+" came back to life and has joined the team "+team.getColor()+team.getName());
 					
 					
