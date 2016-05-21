@@ -18,5 +18,5 @@ commands:
     usage: /t
   resurrect:
     description: Resurrect a player after death
-    usage: /t playerName teamName
+    usage: /resurrect playerName teamName
     
