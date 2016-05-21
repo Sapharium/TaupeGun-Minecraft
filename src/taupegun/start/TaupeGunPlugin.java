@@ -509,33 +509,37 @@ public class TaupeGunPlugin extends JavaPlugin{
 		
 		if (c.getName().equalsIgnoreCase("resurrect"))
 		{
-			
-			Player player = plugin.getContext().getPlayerOnlineByName(a[1]);
-			Team team = plugin.getContext().getTeam(a[2]);
-			
-			if (player != null){
+			if (a.length == 3){
+				Player player = plugin.getContext().getPlayerOnlineByName(a[1]);
+				Team team = plugin.getContext().getTeam(a[2]);
 				
-				if (team != null){
-				
-					// We add the player
-					plugin.getContext().addPlayerToATeam(player, team);
+				if (player != null){
+					
+					if (team != null){
+					
+						// We add the player
+						plugin.getContext().addPlayerToATeam(player, team);
+							
+						plugin.getContext().getAllPlayers().add(player);
 						
-					plugin.getContext().getAllPlayers().add(player);
+						// Change gamemode and teleport player
+						player.setGameMode(GameMode.SURVIVAL);
+						
+						player.teleport(team.getPlayers().get(0).getLocation());
+						
+						plugin.getServer().broadcastMessage(player.getName()+" came back to life and has joined the team "+team.getColor()+team.getName());
 					
-					// Change gamemode and teleport player
-					player.setGameMode(GameMode.SURVIVAL);
-					
-					player.teleport(team.getPlayers().get(0).getLocation());
-					
-					plugin.getServer().broadcastMessage(player.getName()+" came back to life and has joined the team "+team.getColor()+team.getName());
-				
+					}
+					else{
+						s.sendMessage(ChatColor.DARK_RED+"This team doesn't exist");
+					}
 				}
 				else{
-					s.sendMessage(ChatColor.DARK_RED+"This team doesn't exist");
+					s.sendMessage(ChatColor.DARK_RED+"This player doesn't exist");
 				}
 			}
 			else{
-				s.sendMessage(ChatColor.DARK_RED+"This player doesn't exist");
+				s.sendMessage(ChatColor.DARK_RED+"Usage : /resurrect playerName teamName");
 			}
 			
 			return true;
