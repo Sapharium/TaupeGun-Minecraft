@@ -393,7 +393,7 @@ public class TaupeGunPlugin extends JavaPlugin{
 						if(context.getKits().size() != 0 && context.getKits().size() != numberOfMolesPerMolesTeam)
 						{
 							s.sendMessage(ChatColor.DARK_RED + "There is a problem with kits :");
-							s.sendMessage(ChatColor.RED + "There is "+context.getKits().size()+" kits but "+numberOfMolesPerMolesTeam+" moles per moles team");
+							s.sendMessage(ChatColor.RED + "There is "+context.getKits().size()+" kits but "+numberOfMolesPerMolesTeam+" moles (extended game mode), game needs one kit per mole");
 							
 							return true;
 						}

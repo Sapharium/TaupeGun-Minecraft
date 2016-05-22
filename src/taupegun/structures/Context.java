@@ -604,16 +604,15 @@ public class Context {
 		
 		Kit kit = kits.get(rand);
 		
-		Iterator<ItemStack> itemStack = kit.getInventory().iterator();
-		
-		ItemStack items = null;
-		
-		while (itemStack.hasNext()){
-			items = itemStack.next();
-			if (items.getType() != Material.AIR){
-				player.getWorld().dropItemNaturally(player.getLocation(), items);
-			}
+		ItemStack[] items = kit.getInventory().getContents();
+
+		for(ItemStack item : items)
+		{
+			if(item != null && !item.getType().equals(Material.AIR)){
+				
+				player.getWorld().dropItemNaturally(player.getLocation(), item);
 			
+			}
 		}
 		
 		molesWaitingKit.remove(player);
