@@ -87,13 +87,13 @@ public class Ingame implements Listener{
 					
 					message = message.substring(1);
 					
-					plugin.getServer().broadcastMessage(team.getColor()+"<"+player.getName()+">"+ChatColor.GRAY+" "+message);
+					plugin.getServer().broadcastMessage(team.getColor()+"<"+player.getName()+">"+ChatColor.WHITE+" "+message);
 					
 				}
 				else{
 					
 					for (Player play : team.getPlayers()){
-						play.sendMessage(team.getColor()+"<"+player.getName()+" -> team>"+ChatColor.GRAY+" "+message);
+						play.sendMessage(team.getColor()+"<"+player.getName()+" -> team>"+ChatColor.WHITE+" "+message);
 					}
 				}
 				

@@ -270,10 +270,16 @@ public class Context {
 			// Update all structures
 			Team team = getTeamOfPlayer(oldPlayer);
 			
-			team.removePlayer(oldPlayer);
-			team.addPlayer(newPlayer);
+			if (team != null){
+				if (team.getPlayers().contains(oldPlayer)){
+					team.removePlayer(oldPlayer);
+				}
+				team.addPlayer(newPlayer);
+			}
 			
-			playersTeams.remove(oldPlayer);
+			if (playersTeams.containsKey(oldPlayer)){
+				playersTeams.remove(oldPlayer);
+			}
 			playersTeams.put(newPlayer, team);
 			
 			players.remove(oldPlayer);
@@ -368,9 +374,6 @@ public class Context {
 		if (molesTeams.get(rand).countPlayer() == molesPerMolesTeam){
 			molesTeams.remove(rand);
 		}
-		
-		// Now, mole belongs to a team
-		moles.remove(player);
 	}
 	
 	/**
@@ -453,7 +456,13 @@ public class Context {
 		team.removePlayer(player);
 		
 		playersTeams.remove(player);
+		
+		if (team.getPlayers().size() == 0){
+			teams.remove(team.getName());
+		}
+		
 		plugin.MatchInfo();
+		
 	}
 	
 	/**

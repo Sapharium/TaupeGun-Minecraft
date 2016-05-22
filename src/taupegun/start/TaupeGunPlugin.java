@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -786,6 +787,8 @@ public class TaupeGunPlugin extends JavaPlugin{
 									
 									// Avoid two same moles
 									players.add(team.getPlayers().get(rand));
+									
+									plugin.getLogger().log(Level.INFO, "[SPOIL]"+team.getPlayers().get(rand).getName()+" from team "+team.getName()+" has been selected to be a mole.");
 									
 									check = true;
 								}
